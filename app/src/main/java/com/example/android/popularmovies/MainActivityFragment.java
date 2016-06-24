@@ -1,22 +1,18 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,49 +33,34 @@ import java.util.Arrays;
 public class MainActivityFragment extends Fragment {
 
     private MovieAdapter movieAdapter;
-//    private ArrayList<MovieItem> moviesList;
-//    private MovieItem[] movies;
+    private ArrayList<MovieItem> moviesList;
+    private MovieItem[] movies;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if(savedInstanceState==null || !savedInstanceState.containsKey("movies")){
-//            if(movies!=null){
-//                moviesList = new ArrayList<MovieItem>(Arrays.asList(movies));
-//            }else{
-//                updateMovies();
-//            }
-//        }
-//        else{
-//            moviesList = savedInstanceState.getParcelableArrayList("movies");
-//        }
-        setHasOptionsMenu(true);
+        if(savedInstanceState==null || !savedInstanceState.containsKey("movies")){
+            if(movies!=null){
+                moviesList = new ArrayList<MovieItem>(Arrays.asList(movies));
+            }else{
+                updateMovies();
+            }
+        }
+        else{
+            moviesList = savedInstanceState.getParcelableArrayList("movies");
+        }
+
     }
 
     public MainActivityFragment() {
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        outState.putParcelableArrayList("movies",moviesList);
-//        super.onSaveInstanceState(outState);
-//    }
-
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_moviesfragment,menu);
-
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movies",moviesList);
+        super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id= item.getItemId();
-        if(id==R.id.action_refresh){
-            updateMovies();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,7 +75,12 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(),"HELlll!",Toast.LENGTH_SHORT).show();
+                MovieItem movieClicked=movieAdapter.getItem(position);
+                Bundle b =new Bundle();
+                b.putParcelable("MovieObject",movieClicked);
+                Intent i = new Intent(getActivity(),DetailActivity.class);
+                i.putExtras(b);
+                startActivity(i);
             }
         });
 
@@ -135,11 +121,7 @@ public class MainActivityFragment extends Fragment {
             MovieItem[] movieItems = new MovieItem[moviesArray.length()];
 
             for(int i=0;i<moviesArray.length();i++){
-
-                String image=moviesArray.getJSONObject(i).getString(MDB_POSTERPATH);
-                image.replace("%2","");
-                movieItems[i]=new MovieItem(moviesArray.getJSONObject(i).getString(MDB_TITLE),image,moviesArray.getJSONObject(i).getString(MDB_PLOT),moviesArray.getJSONObject(i).getInt(MDB_RATING)+"/10",moviesArray.getJSONObject(i).getString(MDB_RELEASEDATE));
-
+                movieItems[i]=new MovieItem(moviesArray.getJSONObject(i).getString(MDB_TITLE),moviesArray.getJSONObject(i).getString(MDB_POSTERPATH),moviesArray.getJSONObject(i).getString(MDB_PLOT),moviesArray.getJSONObject(i).getInt(MDB_RATING)+"/10",moviesArray.getJSONObject(i).getString(MDB_RELEASEDATE));
             }
 
             return movieItems;
@@ -222,7 +204,7 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(MovieItem[] movieItems) {
 
-//            movies=movieItems;
+            movies=movieItems;
             if(movieItems != null){
                 movieAdapter.clear();
                 for(MovieItem movie : movieItems){
