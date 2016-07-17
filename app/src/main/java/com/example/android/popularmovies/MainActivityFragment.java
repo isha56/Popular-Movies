@@ -39,14 +39,13 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState==null || !savedInstanceState.containsKey("movies")){
-            if(movies!=null){
+        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+            if (movies != null) {
                 moviesList = new ArrayList<MovieItem>(Arrays.asList(movies));
-            }else{
+            } else {
                 updateMovies();
             }
-        }
-        else{
+        } else {
             moviesList = savedInstanceState.getParcelableArrayList("movies");
         }
 
@@ -57,7 +56,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("movies",moviesList);
+        outState.putParcelableArrayList("movies", moviesList);
         super.onSaveInstanceState(outState);
     }
 
@@ -66,19 +65,19 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView= inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        movieAdapter=new MovieAdapter(getActivity(),new ArrayList<MovieItem>());
+        movieAdapter = new MovieAdapter(getActivity(), new ArrayList<MovieItem>());
 
-        GridView gridView=(GridView)rootView.findViewById(R.id.gridview_movies);
+        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
         gridView.setAdapter(movieAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieItem movieClicked=movieAdapter.getItem(position);
-                Bundle b =new Bundle();
-                b.putParcelable("MovieObject",movieClicked);
-                Intent i = new Intent(getActivity(),DetailActivity.class);
+                MovieItem movieClicked = movieAdapter.getItem(position);
+                Bundle b = new Bundle();
+                b.putParcelable("MovieObject", movieClicked);
+                Intent i = new Intent(getActivity(), DetailActivity.class);
                 i.putExtras(b);
                 startActivity(i);
             }
@@ -88,10 +87,10 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-    private void updateMovies(){
-        FetchMoviesTask moviesTask=new FetchMoviesTask();
-        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortFilter=prefs.getString("sort_by","popularity.desc");
+    private void updateMovies() {
+        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortFilter = prefs.getString("sort_by", "popularity.desc");
         moviesTask.execute(sortFilter);
     }
 
@@ -101,27 +100,27 @@ public class MainActivityFragment extends Fragment {
         updateMovies();
     }
 
-    public class FetchMoviesTask extends AsyncTask<String ,Void , MovieItem[]> {
+    public class FetchMoviesTask extends AsyncTask<String, Void, MovieItem[]> {
 
-        private final String LOG_TAG=FetchMoviesTask.class.getSimpleName();
+        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         private MovieItem[] getMoviesDataFromJson(String moviesJsonStr)
-            throws JSONException{
+                throws JSONException {
 
-            final String MDB_RESULTS="results";
-            final String MDB_RELEASEDATE="release_date";
-            final String MDB_POSTERPATH="poster_path";
-            final String MDB_PLOT="overview";
-            final String MDB_TITLE="title";
-            final String MDB_RATING="vote_average";
+            final String MDB_RESULTS = "results";
+            final String MDB_RELEASEDATE = "release_date";
+            final String MDB_POSTERPATH = "poster_path";
+            final String MDB_PLOT = "overview";
+            final String MDB_TITLE = "title";
+            final String MDB_RATING = "vote_average";
 
-            JSONObject moviesJson= new JSONObject(moviesJsonStr);
-            JSONArray moviesArray =moviesJson.getJSONArray(MDB_RESULTS);
+            JSONObject moviesJson = new JSONObject(moviesJsonStr);
+            JSONArray moviesArray = moviesJson.getJSONArray(MDB_RESULTS);
 
             MovieItem[] movieItems = new MovieItem[moviesArray.length()];
 
-            for(int i=0;i<moviesArray.length();i++){
-                movieItems[i]=new MovieItem(moviesArray.getJSONObject(i).getString(MDB_TITLE),moviesArray.getJSONObject(i).getString(MDB_POSTERPATH),moviesArray.getJSONObject(i).getString(MDB_PLOT),moviesArray.getJSONObject(i).getInt(MDB_RATING)+"/10",moviesArray.getJSONObject(i).getString(MDB_RELEASEDATE));
+            for (int i = 0; i < moviesArray.length(); i++) {
+                movieItems[i] = new MovieItem(moviesArray.getJSONObject(i).getString(MDB_TITLE), moviesArray.getJSONObject(i).getString(MDB_POSTERPATH), moviesArray.getJSONObject(i).getString(MDB_PLOT), moviesArray.getJSONObject(i).getInt(MDB_RATING) + "/10", moviesArray.getJSONObject(i).getString(MDB_RELEASEDATE));
             }
 
             return movieItems;
@@ -141,12 +140,12 @@ public class MainActivityFragment extends Fragment {
 
             try {
 
-                final String MOVIESdb_BASE_URL="https://api.themoviedb.org/3/discover/movie?";
+                final String MOVIESdb_BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
                 final String SORTBY_PARAM = "sort_by";
                 final String APIKEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIESdb_BASE_URL).buildUpon()
-                        .appendQueryParameter(SORTBY_PARAM,params[0])
+                        .appendQueryParameter(SORTBY_PARAM, params[0])
                         .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                         .build();
 
@@ -194,7 +193,7 @@ public class MainActivityFragment extends Fragment {
                 return getMoviesDataFromJson(moviesJsonStr);
             } catch (JSONException e) {
 
-                Log.e(LOG_TAG,e.getMessage(),e);
+                Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
 
@@ -204,10 +203,10 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(MovieItem[] movieItems) {
 
-            movies=movieItems;
-            if(movieItems != null){
+            movies = movieItems;
+            if (movieItems != null) {
                 movieAdapter.clear();
-                for(MovieItem movie : movieItems){
+                for (MovieItem movie : movieItems) {
                     movieAdapter.add(movie);
                 }
             }

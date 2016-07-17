@@ -32,7 +32,7 @@ public class MovieItem implements Parcelable {
         this.title=title;
         this.rating=rating;
         this.plot=plot;
-        this.posterThumbnail=Uri.parse("http://image.tmdb.org/t/p/w342/"+posterThumbnail).buildUpon()
+        this.posterThumbnail=Uri.parse("http://image.tmdb.org/t/p/w500/"+posterThumbnail).buildUpon()
                 .build();
     }
 
