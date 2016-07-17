@@ -11,7 +11,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MovieAdapter extends ArrayAdapter<MovieItem> {
+
+    @BindView(R.id.grid_item_movie_imageview) ImageView posterView;
 
     public MovieAdapter(Activity context, List<MovieItem> movieItems){
         super(context,0,movieItems);
@@ -25,7 +30,7 @@ public class MovieAdapter extends ArrayAdapter<MovieItem> {
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.grid_item_movie,parent,false);
         }
 
-        ImageView posterView=(ImageView)convertView.findViewById(R.id.grid_item_movie_imageview);
+        ButterKnife.bind(this,convertView);
         Picasso.with(getContext())
             .load(movieItem.posterThumbnail)
             .placeholder(R.mipmap.ic_launcher)

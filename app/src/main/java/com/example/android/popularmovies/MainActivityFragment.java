@@ -27,10 +27,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+
+    @BindView (R.id.gridview_movies) GridView gridView;
+    private Unbinder unbinder;
 
     private MovieAdapter movieAdapter;
     private ArrayList<MovieItem> moviesList;
@@ -69,7 +76,7 @@ public class MainActivityFragment extends Fragment {
 
         movieAdapter = new MovieAdapter(getActivity(), new ArrayList<MovieItem>());
 
-        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        unbinder = ButterKnife.bind(this,rootView);
         gridView.setAdapter(movieAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -98,6 +105,12 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateMovies();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, MovieItem[]> {

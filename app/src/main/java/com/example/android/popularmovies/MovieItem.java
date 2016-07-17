@@ -8,9 +8,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by ubuntu on 17/6/16.
- */
 public class MovieItem implements Parcelable {
 
     String title;
